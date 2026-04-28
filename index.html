@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillMatch — AI Job Portal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- INTRO ANIMATION -->
+  <div id="intro">
+    <canvas id="particles"></canvas>
+    <div id="ring"></div>
+    <div id="ring2"></div>
+    <div id="ring3"></div>
+    <div id="logo-wrap">
+      <div id="logo-text">SkillMatch</div>
+      <div id="logo-sub">AI Powered Job Portal</div>
+      <div id="tagline">Find your perfect career match</div>
+      <div id="credit">Designed & Developed by Preety</div>
+      <button id="enter-btn" onclick="showDashboard()">Enter Portal →</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" style="display:none;">
+
+    <!-- Navbar -->
+    <nav>
+      <div class="logo">SkillMatch</div>
+      <div class="nav-links">
+        <a href="#">Jobs</a>
+        <a href="#">Companies</a>
+        <a href="#">About</a>
+        <button class="nav-btn" onclick="showLogin()">Login</button>
+        <button class="nav-btn-outline" onclick="showRegister()">Register</button>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="hero">
+      <h1>Find Your Perfect <span class="blue">Job Match</span></h1>
+      <p>AI-powered job matching based on your skills — 94% match accuracy</p>
+      <div class="search-row">
+        <input type="text" id="search-job" placeholder="Job title or skill...">
+        <input type="text" id="search-loc" placeholder="Location...">
+        <button onclick="searchJobs()">Search Jobs</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">2,450+</div><div class="stat-label">Jobs Posted</div></div>
+      <div class="stat"><div class="stat-num">850+</div><div class="stat-label">Companies</div></div>
+      <div class="stat"><div class="stat-num">12K+</div><div class="stat-label">Job Seekers</div></div>
+      <div class="stat"><div class="stat-num">94%</div><div class="stat-label">Match Rate</div></div>
+    </div>
+
+    <!-- Categories -->
+    <div class="cats">
+      <button class="cat active" onclick="filterJobs('all', this)">All</button>
+      <button class="cat" onclick="filterJobs('tech', this)">Tech</button>
+      <button class="cat" onclick="filterJobs('design', this)">Design</button>
+      <button class="cat" onclick="filterJobs('marketing', this)">Marketing</button>
+      <button class="cat" onclick="filterJobs('finance', this)">Finance</button>
+      <button class="cat" onclick="filterJobs('hr', this)">HR</button>
+    </div>
+
+    <!-- Jobs Grid -->
+    <div class="section-title">Featured Jobs</div>
+    <div class="jobs-grid" id="jobs-grid"></div>
+
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal-overlay" id="login-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Login to SkillMatch</h2>
+        <button onclick="closeModal('login-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="role-select">
+          <button class="role-btn active" onclick="selectRole('seeker', this)">Job Seeker</button>
+          <button class="role-btn" onclick="selectRole('recruiter', this)">Recruiter</button>
+          <button class="role-btn" onclick="selectRole('admin', this)">Admin</button>
+        </div>
+        <input type="email" placeholder="Email">
+        <input type="password" placeholder="Password">
+        <button class="submit-btn" onclick="loginUser()">Login →</button>
+        <p class="modal-link">Don't have an account? <span onclick="switchModal('login-modal','register-modal')">Register</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTER MODAL -->
+  <div class="modal-overlay" id="register-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Create Account</h2>
+        <button onclick="closeModal('register-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="role-select">
+          <button class="role-btn active" onclick="selectRole('seeker', this)">Job Seeker</button>
+          <button class="role-btn" onclick="selectRole('recruiter', this)">Recruiter</button>
+        </div>
+        <input type="text" placeholder="Full Name">
+        <input type="email" placeholder="Email">
+        <input type="password" placeholder="Password">
+        <button class="submit-btn" onclick="closeModal('register-modal')">Create Account →</button>
+        <p class="modal-link">Already have an account? <span onclick="switchModal('register-modal','login-modal')">Login</span></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

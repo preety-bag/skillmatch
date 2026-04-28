@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillMatch Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #admin-login {
+      height: 100vh; display: flex;
+      align-items: center; justify-content: center;
+    }
+    .admin-login-box {
+      background: #0d1428; border: 1px solid #1e3a6e;
+      border-radius: 16px; padding: 40px; width: 380px; text-align: center;
+    }
+    .admin-login-box h1 { color: #3b82f6; font-size: 24px; margin-bottom: 8px; }
+    .admin-login-box p { color: #64748b; font-size: 13px; margin-bottom: 24px; }
+    .admin-login-box input {
+      width: 100%; background: #1e3a6e; border: 1px solid #2563eb;
+      border-radius: 8px; padding: 12px 16px; color: #e2e8f0;
+      font-size: 14px; margin-bottom: 12px; outline: none;
+    }
+    .admin-login-box button {
+      width: 100%; background: #2563eb; color: white;
+      border: none; padding: 12px; border-radius: 8px;
+      font-size: 16px; cursor: pointer; margin-top: 8px;
+    }
+    #error-msg { color: #ef4444; font-size: 13px; margin-top: 8px; }
+
+    /* ADMIN DASHBOARD */
+    #admin-dashboard { display: none; }
+    .admin-layout { display: flex; height: 100vh; }
+
+    .admin-sidebar {
+      width: 240px; background: #0d1428;
+      border-right: 1px solid #1e3a6e;
+      padding: 24px 16px; display: flex;
+      flex-direction: column; gap: 8px;
+    }
+    .admin-logo { font-size: 20px; color: #3b82f6; font-weight: 700; margin-bottom: 4px; }
+    .admin-badge {
+      font-size: 11px; background: #1e3a6e; color: #3b82f6;
+      padding: 3px 10px; border-radius: 10px;
+      display: inline-block; margin-bottom: 20px;
+    }
+    .admin-nav-link {
+      display: block; padding: 10px 14px; color: #94a3b8;
+      text-decoration: none; border-radius: 8px;
+      font-size: 14px; margin-bottom: 4px; cursor: pointer;
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .admin-nav-link:hover, .admin-nav-link.active {
+      background: #1e3a6e; color: #e2e8f0;
+    }
+    .admin-logout {
+      margin-top: auto; background: #1e3a6e; color: #ef4444;
+      border: 1px solid #1e3a6e; padding: 10px;
+      border-radius: 8px; cursor: pointer; font-size: 14px;
+    }
+
+    .admin-main { flex: 1; overflow-y: auto; padding: 24px; background: #0a0f1e; }
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
+    .admin-section h2 { font-size: 22px; color: #3b82f6; margin-bottom: 20px; }
+
+    /* Stats Cards */
+    .stats-cards {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 16px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: #0d1428; border: 1px solid #1e3a6e;
+      border-radius: 12px; padding: 20px; text-align: center;
+    }
+    .stat-card .num { font-size: 32px; font-weight: 700; color: #3b82f6; }
+    .stat-card .label { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+    /* Table */
+    .admin-table {
+      background: #0d1428; border: 1px solid #1e3a6e;
+      border-radius: 12px; overflow: hidden; margin-bottom: 24px;
+    }
+    .admin-table table { width: 100%; border-collapse: collapse; }
+    .admin-table th {
+      background: #1e3a6e; color: #94a3b8;
+      padding: 12px 16px; text-align: left; font-size: 13px;
+    }
+    .admin-table td { padding: 12px 16px; border-bottom: 1px solid #1e3a6e; font-size: 14px; color: #e2e8f0; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: #0f2347; }
+
+    .badge {
+      padding: 3px 10px; border-radius: 10px;
+      font-size: 11px; font-weight: 600;
+    }
+    .badge-green { background: #052e16; color: #22c55e; }
+    .badge-blue { background: #0f2347; color: #3b82f6; }
+    .badge-red { background: #1f0a0a; color: #ef4444; }
+    .badge-orange { background: #1c0a03; color: #f97316; }
+
+    .action-btn {
+      padding: 5px 12px; border-radius: 6px;
+      border: none; cursor: pointer; font-size: 12px; margin-right: 4px;
+    }
+    .btn-approve { background: #052e16; color: #22c55e; }
+    .btn-reject { background: #1f0a0a; color: #ef4444; }
+    .btn-ban { background: #1c0a03; color: #f97316; }
+    .btn-delete { background: #1f0a0a; color: #ef4444; }
+
+    /* Add Job Form */
+    .admin-card {
+      background: #0d1428; border: 1px solid #1e3a6e;
+      border-radius: 12px; padding: 20px; margin-bottom: 20px;
+    }
+    .admin-card h3 { color: #94a3b8; font-size: 15px; margin-bottom: 16px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .form-grid input, .form-grid select {
+      background: #1e3a6e; border: 1px solid #2563eb;
+      border-radius: 8px; padding: 10px 14px;
+      color: #e2e8f0; font-size: 14px; outline: none;
+    }
+    .form-grid select option { background: #1e3a6e; }
+    .add-btn {
+      background: #2563eb; color: white; border: none;
+      padding: 10px 24px; border-radius: 8px;
+      cursor: pointer; font-size: 14px;
+    }
+
+    /* Announcement */
+    .announce-box textarea {
+      width: 100%; background: #1e3a6e; border: 1px solid #2563eb;
+      border-radius: 8px; padding: 12px; color: #e2e8f0;
+      font-size: 14px; outline: none; height: 100px; resize: none;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Login -->
+  <div id="admin-login">
+    <div class="admin-login-box">
+      <h1>🔐 Admin Login</h1>
+      <p>SkillMatch Admin Panel</p>
+      <input type="text" id="admin-user" placeholder="Username">
+      <input type="password" id="admin-pass" placeholder="Password">
+      <button onclick="adminLogin()">Login →</button>
+      <p id="error-msg"></p>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="admin-dashboard">
+    <div class="admin-layout">
+
+      <!-- Sidebar -->
+      <div class="admin-sidebar">
+        <div class="admin-logo">SkillMatch</div>
+        <div class="admin-badge">Admin Panel</div>
+        <button class="admin-nav-link active" onclick="showSection('overview', this)">📊 Overview</button>
+        <button class="admin-nav-link" onclick="showSection('users', this)">👥 Users</button>
+        <button class="admin-nav-link" onclick="showSection('companies', this)">🏢 Companies</button>
+        <button class="admin-nav-link" onclick="showSection('jobs', this)">💼 Jobs</button>
+        <button class="admin-nav-link" onclick="showSection('applications', this)">📝 Applications</button>
+        <button class="admin-nav-link" onclick="showSection('announce', this)">📢 Announcements</button>
+        <button class="admin-logout" onclick="adminLogout()">Logout</button>
+      </div>
+
+      <!-- Main Content -->
+      <div class="admin-main">
+
+        <!-- Overview -->
+        <div id="section-overview" class="admin-section active">
+          <h2>📊 Dashboard Overview</h2>
+          <div class="stats-cards">
+            <div class="stat-card"><div class="num">12,450</div><div class="label">Total Users</div></div>
+            <div class="stat-card"><div class="num">850</div><div class="label">Companies</div></div>
+            <div class="stat-card"><div class="num">2,450</div><div class="label">Jobs Posted</div></div>
+            <div class="stat-card"><div class="num">8,920</div><div class="label">Applications</div></div>
+          </div>
+          <div class="stats-cards">
+            <div class="stat-card"><div class="num" style="color:#22c55e">94%</div><div class="label">Match Rate</div></div>
+            <div class="stat-card"><div class="num" style="color:#f97316">23</div><div class="label">Pending Approvals</div></div>
+            <div class="stat-card"><div class="num" style="color:#ef4444">5</div><div class="label">Reports</div></div>
+            <div class="stat-card"><div class="num" style="color:#a78bfa">142</div><div class="label">New Today</div></div>
+          </div>
+        </div>
+
+        <!-- Users -->
+        <div id="section-users" class="admin-section">
+          <h2>👥 Manage Users</h2>
+          <div class="admin-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Companies -->
+        <div id="section-companies" class="admin-section">
+          <h2>🏢 Manage Companies</h2>
+          <div class="admin-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Company</th><th>Email</th><th>Jobs Posted</th><th>Status</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="companies-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Jobs -->
+        <div id="section-jobs" class="admin-section">
+          <h2>💼 Manage Jobs</h2>
+          <div class="admin-card">
+            <h3>Add New Job</h3>
+            <div class="form-grid">
+              <input type="text" id="j-title" placeholder="Job Title">
+              <input type="text" id="j-company" placeholder="Company">
+              <input type="text" id="j-salary" placeholder="Salary (e.g. ₹8-12 LPA)">
+              <select id="j-category">
+                <option value="">Select Category</option>
+                <option value="tech">Tech</option>
+                <option value="design">Design</option>
+                <option value="marketing">Marketing</option>
+                <option value="finance">Finance</option>
+                <option value="hr">HR</option>
+              </select>
+              <input type="text" id="j-location" placeholder="Location">
+              <select id="j-type">
+                <option value="">Job Type</option>
+                <option value="Full Time">Full Time</option>
+                <option value="Internship">Internship</option>
+                <option value="Part Time">Part Time</option>
+              </select>
+            </div>
+            <button class="add-btn" onclick="addJob()">+ Add Job</button>
+          </div>
+          <div class="admin-table">
+            <table>
+              <thead>
+                <tr><th>Title</th><th>Company</th><th>Category</th><th>Type</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="jobs-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Applications -->
+        <div id="section-applications" class="admin-section">
+          <h2>📝 Applications</h2>
+          <div class="admin-table">
+            <table>
+              <thead>
+                <tr><th>Applicant</th><th>Job</th><th>Company</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="apps-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Announcements -->
+        <div id="section-announce" class="admin-section">
+          <h2>📢 Send Announcement</h2>
+          <div class="admin-card announce-box">
+            <h3>Send to All Users</h3>
+            <textarea id="announce-text" placeholder="Type your announcement here..."></textarea>
+            <button class="add-btn" onclick="sendAnnouncement()">Send Announcement →</button>
+          </div>
+          <div class="admin-card" id="announce-list">
+            <h3>Recent Announcements</h3>
+            <p style="color:#64748b;font-size:13px;">No announcements yet.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillMatch — Job Seeker</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .seeker-layout { display: flex; height: 100vh; }
+    .seeker-sidebar {
+      width: 240px; background: #0d1428;
+      border-right: 1px solid #1e3a6e;
+      padding: 24px 16px; display: flex;
+      flex-direction: column; gap: 8px;
+    }
+    .seeker-main { flex: 1; overflow-y: auto; padding: 24px; background: #0a0f1e; }
+    .seeker-section { display: none; }
+    .seeker-section.active { display: block; }
+    .seeker-section h2 { font-size: 22px; color: #3b82f6; margin-bottom: 20px; }
+
+    .profile-card {
+      background: #0d1428; border: 1px solid #1e3a6e;
+      border-radius: 16px; padding: 30px; text-align: center;
+      margin-bottom: 20px;
+    }
+    .profile-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; margin: 0 auto 16px;
+    }
+    .profile-name { font-size: 22px; font-weight: 700; color: #e2e8f0; }
+    .profile-title { color: #64748b; font-size: 14px; margin-top: 4px; }
+    .profile-stats {
+      display: flex; gap: 24px; justify-content: center; margin-top: 16px;
+    }
+    .profile-stat { text-align: center; }
+    .profile-stat .num { font-size: 20px; font-weight: 700; color: #3b82f6; }
+    .profile-stat .label { font-size: 12px; color: #64748b; }
+
+    .skills-section { margin-top: 20px; text-align: left; }
+    .skills-section h3 { color: #94a3b8; font-size: 14px; margin-bottom: 12px; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .skill-tag {
+      background: #0f2347; color: #3b82f6;
+      border: 1px solid #1e3a6e; padding: 6px 14px;
+      border-radius: 20px; font-size: 13px;
+    }
+
+    .job-match-card {
+      background: #0d1428; border: 1px solid #1e3a6e;
+      border-radius: 12px; padding: 18px; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 16px;
+      transition: border-color 0.2s;
+    }
+    .job-match-card:hover { border-color: #2563eb; }
+    .match-score {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: white; flex-shrink: 0;
+    }
+    .match-info { flex: 1; }
+    .match-title { font-size: 16px; font-weight: 600; color: #e2e8f0; }
+    .match-company { font-size: 13px; color: #64748b; margin-top: 2px; }
+    .match-salary { font-size: 14px; color: #22c55e; font-weight: 600; }
+    .match-apply {
+      background: #2563eb; color: white; border: none;
+      padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 13px;
+    }
+
+    .app-card {
+      background: #0d1428; border: 1px solid #1e3a6e;
+      border-radius: 12px; padding: 16px; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .app-emoji { font-size: 28px; }
+    .app-info { flex: 1; }
+    .app-title { font-size: 15px; font-weight: 600; color: #e2e8f0; }
+    .app-company { font-size: 12px; color: #64748b; margin-top: 2px; }
+    .app-date { font-size: 12px; color: #475569; }
+
+    .sidebar-nav-link {
+      display: block; padding: 10px 14px; color: #94a3b8;
+      border-radius: 8px; font-size: 14px;
+      margin-bottom: 4px; cursor: pointer;
+      border: none; background: none;
+      width: 100%; text-align: left;
+    }
+    .sidebar-nav-link:hover, .sidebar-nav-link.active {
+      background: #1e3a6e; color: #e2e8f0;
+    }
+    .sidebar-logout {
+      margin-top: auto; background: #1e3a6e; color: #ef4444;
+      border: 1px solid #1e3a6e; padding: 10px;
+      border-radius: 8px; cursor: pointer; font-size: 14px;
+    }
+
+    .admin-card {
+      background: #0d1428; border: 1px solid #1e3a6e;
+      border-radius: 12px; padding: 20px; margin-bottom: 20px;
+    }
+    .admin-card h3 { color: #94a3b8; font-size: 15px; margin-bottom: 16px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .form-grid input, .form-grid select, .form-grid textarea {
+      background: #1e3a6e; border: 1px solid #2563eb;
+      border-radius: 8px; padding: 10px 14px;
+      color: #e2e8f0; font-size: 14px; outline: none;
+    }
+    .add-btn {
+      background: #2563eb; color: white; border: none;
+      padding: 10px 24px; border-radius: 8px;
+      cursor: pointer; font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="seeker-layout">
+    <!-- Sidebar -->
+    <div class="seeker-sidebar">
+      <div class="admin-logo" style="color:#3b82f6;font-size:20px;font-weight:700;margin-bottom:4px;">SkillMatch</div>
+      <div class="admin-badge" style="font-size:11px;background:#1e3a6e;color:#3b82f6;padding:3px 10px;border-radius:10px;display:inline-block;margin-bottom:20px;">Job Seeker</div>
+      <button class="sidebar-nav-link active" onclick="showSeekerSection('dashboard', this)">🏠 Dashboard</button>
+      <button class="sidebar-nav-link" onclick="showSeekerSection('matches', this)">🎯 Job Matches</button>
+      <button class="sidebar-nav-link" onclick="showSeekerSection('applications', this)">📝 My Applications</button>
+      <button class="sidebar-nav-link" onclick="showSeekerSection('profile', this)">👤 My Profile</button>
+      <button class="sidebar-nav-link" onclick="showSeekerSection('resume', this)">📄 Resume Builder</button>
+      <button class="sidebar-logout" onclick="window.location.href='index.html'">Logout</button>
+    </div>
+
+    <!-- Main -->
+    <div class="seeker-main">
+
+      <!-- Dashboard -->
+      <div id="seeker-dashboard" class="seeker-section active">
+        <h2>👋 Welcome, Rahul!</h2>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+          <div class="admin-card" style="text-align:center;">
+            <div style="font-size:32px;font-weight:700;color:#3b82f6;">5</div>
+            <div style="color:#64748b;font-size:13px;">Applications Sent</div>
+          </div>
+          <div class="admin-card" style="text-align:center;">
+            <div style="font-size:32px;font-weight:700;color:#22c55e;">2</div>
+            <div style="color:#64748b;font-size:13px;">Shortlisted</div>
+          </div>
+          <div class="admin-card" style="text-align:center;">
+            <div style="font-size:32px;font-weight:700;color:#f97316;">8</div>
+            <div style="color:#64748b;font-size:13px;">Job Matches</div>
+          </div>
+        </div>
+        <div class="admin-card">
+          <h3>🔔 Recent Activity</h3>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <span style="font-size:20px;">✅</span>
+              <div>
+                <div style="color:#e2e8f0;font-size:14px;">Shortlisted for Frontend Developer at Amazon</div>
+                <div style="color:#64748b;font-size:12px;">2 hours ago</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;">
+              <span style="font-size:20px;">📩</span>
+              <div>
+                <div style="color:#e2e8f0;font-size:14px;">Application submitted for UI/UX Designer at Flipkart</div>
+                <div style="color:#64748b;font-size:12px;">1 day ago</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;">
+              <span style="font-size:20px;">🎯</span>
+              <div>
+                <div style="color:#e2e8f0;font-size:14px;">3 new job matches found!</div>
+                <div style="color:#64748b;font-size:12px;">2 days ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Job Matches -->
+      <div id="seeker-matches" class="seeker-section">
+        <h2>🎯 Your Job Matches</h2>
+        <div id="matches-list"></div>
+      </div>
+
+      <!-- Applications -->
+      <div id="seeker-applications" class="seeker-section">
+        <h2>📝 My Applications</h2>
+        <div id="applications-list"></div>
+      </div>
+
+      <!-- Profile -->
+      <div id="seeker-profile" class="seeker-section">
+        <h2>👤 My Profile</h2>
+        <div class="profile-card">
+          <div class="profile-avatar">👤</div>
+          <div class="profile-name">Rahul Sharma</div>
+          <div class="profile-title">Frontend Developer • Bangalore</div>
+          <div class="profile-stats">
+            <div class="profile-stat"><div class="num">5</div><div class="label">Applications</div></div>
+            <div class="profile-stat"><div class="num">2</div><div class="label">Shortlisted</div></div>
+            <div class="profile-stat"><div class="num">92%</div><div class="label">Profile Score</div></div>
+          </div>
+          <div class="skills-section">
+            <h3>My Skills</h3>
+            <div class="skill-tags">
+              <span class="skill-tag">HTML</span>
+              <span class="skill-tag">CSS</span>
+              <span class="skill-tag">JavaScript</span>
+              <span class="skill-tag">React</span>
+              <span class="skill-tag">Node.js</span>
+              <span class="skill-tag">MongoDB</span>
+            </div>
+          </div>
+        </div>
+        <div class="admin-card">
+          <h3>Edit Profile</h3>
+          <div class="form-grid">
+            <input type="text" placeholder="Full Name" value="Rahul Sharma">
+            <input type="text" placeholder="Job Title" value="Frontend Developer">
+            <input type="email" placeholder="Email" value="rahul@gmail.com">
+            <input type="text" placeholder="Location" value="Bangalore">
+          </div>
+          <button class="add-btn" onclick="alert('Profile updated!')">Save Profile</button>
+        </div>
+      </div>
+
+      <!-- Resume Builder -->
+      <div id="seeker-resume" class="seeker-section">
+        <h2>📄 Resume Builder</h2>
+        <div class="admin-card">
+          <h3>Build Your Resume</h3>
+          <div class="form-grid">
+            <input type="text" placeholder="Full Name">
+            <input type="text" placeholder="Job Title">
+            <input type="email" placeholder="Email">
+            <input type="text" placeholder="Phone">
+            <input type="text" placeholder="Location">
+            <input type="text" placeholder="LinkedIn URL">
+          </div>
+          <div style="margin-bottom:12px;">
+            <input type="text" placeholder="Skills (comma separated)" style="width:100%;background:#1e3a6e;border:1px solid #2563eb;border-radius:8px;padding:10px 14px;color:#e2e8f0;font-size:14px;outline:none;">
+          </div>
+          <button class="add-btn" onclick="alert('Resume saved! Download feature coming soon.')">Save Resume →</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="seeker.js"></script>
+</body>
+</html>
